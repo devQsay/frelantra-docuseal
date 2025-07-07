@@ -1,31 +1,38 @@
+# Ruby/DB
 /db/*.sqlite3
+/.bundle
+.byebug_history
+/config/master.key
 
+# Node
 **/node_modules
-/node_modules
+/public/packs
+/public/packs-test
+
+# Tests & Coverage
+/spec
 /coverage
-/doc
+
+# Docs & misc
+/docs
+docuseal_logs.txt
+sha256*
+
+# Git & CI
 /.git
 /.github
-/.bundle
-/.yardoc
 
+# Logs & temp
 /log/*
-/tmp/*
 !/log/.keep
+/tmp/*
 !/tmp/.keep
-
 /tmp/pids/*
 !/tmp/pids/.keep
 
 /storage/*
 !/storage/.keep
 
-.byebug_history
-
-/config/master.key
-/public/packs-test
-/public/packs
-/attachments
-/docuseal
+# Editor cruft
 .DS_Store
 .env
