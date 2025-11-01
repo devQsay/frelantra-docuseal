@@ -1,4 +1,4 @@
-FROM ruby:3.4.2-alpine AS download
+FROM ruby:3.4.5-alpine AS download
 
 WORKDIR /fonts
 
@@ -15,7 +15,7 @@ RUN apk --no-cache add fontforge wget && \
 
 RUN fontforge -lang=py -c 'font1 = fontforge.open("FreeSans.ttf"); font2 = fontforge.open("NotoSansSymbols2-Regular.ttf"); font1.mergeFonts(font2); font1.generate("FreeSans.ttf")'
 
-FROM ruby:3.4.2-alpine AS webpack
+FROM ruby:3.4.5-alpine AS webpack
 
 ENV RAILS_ENV=production
 ENV NODE_ENV=production
@@ -41,7 +41,7 @@ COPY ./app/views ./app/views
 
 RUN echo "gem 'shakapacker'" > Gemfile && ./bin/shakapacker
 
-FROM ruby:3.4.2-alpine AS app
+FROM ruby:3.4.5-alpine AS app
 
 ENV RAILS_ENV=production
 ENV BUNDLE_WITHOUT="development:test"
@@ -50,19 +50,35 @@ ENV OPENSSL_CONF=/app/openssl_legacy.cnf
 
 WORKDIR /app
 
-RUN echo '@edge https://dl-cdn.alpinelinux.org/alpine/edge/community' >> /etc/apk/repositories && apk add --no-cache sqlite-dev libpq-dev mariadb-dev vips-dev@edge redis libheif@edge vips-heif@edge gcompat ttf-freefont && mkdir /fonts && rm /usr/share/fonts/freefont/FreeSans.otf
+# Add edge repository and install packages
+RUN echo '@edge https://dl-cdn.alpinelinux.org/alpine/edge/community' >> /etc/apk/repositories && \
+    apk add --no-cache \
+    curl \
+    wget \
+    sqlite-dev \
+    libpq-dev \
+    mariadb-dev \
+    libdeflate@edge \
+    vips-dev@edge \
+    redis \
+    libheif@edge \
+    vips-heif@edge \
+    gcompat \
+    ttf-freefont && \
+    mkdir /fonts && \
+    rm /usr/share/fonts/freefont/FreeSans.otf
 
 RUN echo $'.include = /etc/ssl/openssl.cnf\n\
-\n\
-[provider_sect]\n\
-default = default_sect\n\
-legacy = legacy_sect\n\
-\n\
-[default_sect]\n\
-activate = 1\n\
-\n\
-[legacy_sect]\n\
-activate = 1' >> /app/openssl_legacy.cnf
+    \n\
+    [provider_sect]\n\
+    default = default_sect\n\
+    legacy = legacy_sect\n\
+    \n\
+    [default_sect]\n\
+    activate = 1\n\
+    \n\
+    [legacy_sect]\n\
+    activate = 1' >> /app/openssl_legacy.cnf
 
 COPY ./Gemfile ./Gemfile.lock ./
 
