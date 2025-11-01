@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-ruby '3.4.5'
+ruby '3.4.2'
 
 gem 'arabic-letter-connector', require: 'arabic-letter-connector/logic'
 gem 'aws-sdk-s3', require: false
@@ -30,7 +30,7 @@ gem 'premailer-rails'
 gem 'pretender'
 gem 'puma', require: false
 gem 'rack'
-gem 'rails'
+gem 'rails', '~> 7.1.0'
 gem 'rails_autolink'
 gem 'rails-i18n'
 gem 'rotp'
