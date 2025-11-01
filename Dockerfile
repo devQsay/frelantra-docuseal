@@ -82,7 +82,7 @@ RUN echo $'.include = /etc/ssl/openssl.cnf\n\
 
 COPY ./Gemfile ./Gemfile.lock ./
 
-RUN apk add --no-cache build-base && bundle install && apk del --no-cache build-base && rm -rf ~/.bundle /usr/local/bundle/cache && ruby -e "puts Dir['/usr/local/bundle/**/{spec,rdoc,resources/shared,resources/collation,resources/locales}']" | xargs rm -rf
+RUN apk add --no-cache build-base yaml-dev && bundle install && apk del --no-cache build-base yaml-dev && rm -rf ~/.bundle /usr/local/bundle/cache && ruby -e "puts Dir['/usr/local/bundle/**/{spec,rdoc,resources/shared,resources/collation,resources/locales}']" | xargs rm -rf
 
 COPY ./bin ./bin
 COPY ./app ./app
