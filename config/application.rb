@@ -20,6 +20,8 @@ module DocuSeal
     config.load_defaults 7.1
 
     # config.autoload_lib(ignore: %w[assets tasks puma]) # Rails 8 feature, commented for 7.1 compatibility
+    # Rails 7.1 alternative: manually add lib to autoload_paths
+    config.autoload_paths << Rails.root.join('lib')
 
     config.active_storage.routes_prefix = ''
 
