@@ -41,3 +41,10 @@ yarn-debug.log*
 /docuseal
 /ee
 dump.rdb
+
+# Local development files
+*.bak
+cookies.txt
+setup_local.sh
+CLAUDE.md
+LOCAL_TESTING.md

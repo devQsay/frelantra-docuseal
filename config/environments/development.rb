@@ -49,8 +49,8 @@ Rails.application.configure do
 
   config.active_job.queue_adapter = :sidekiq
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :disk
+  # Store uploaded files on S3 (see config/storage.yml for options).
+  config.active_storage.service = :aws_s3
   config.active_storage.resolve_model_to_route = :rails_storage_proxy
 
   # Don't care if the mailer can't send.
