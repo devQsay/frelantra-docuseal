@@ -78,6 +78,46 @@ bundle --version        # Should show Bundler version
 
 ---
 
+## 🔑 Environment Configuration
+
+### Set Up .env File
+
+Copy the example environment file and configure it with your credentials:
+
+```bash
+# Copy the development template
+cp .env.development.example .env.development
+
+# Edit with your actual values
+nano .env.development  # or use your preferred editor
+```
+
+**Required Configuration:**
+1. **AWS Credentials** - Get from AWS IAM console or administrator
+   - `AWS_ACCESS_KEY_ID`
+   - `AWS_SECRET_ACCESS_KEY`
+   - `S3_ATTACHMENTS_BUCKET`
+
+2. **Secrets** - Generate with `bundle exec rails secret`
+   - `SECRET_KEY_BASE`
+   - `ENCRYPTION_SECRET`
+
+3. **Redis** - Should work with defaults if Redis is running locally
+
+**Example `.env.development`:**
+```env
+SECRET_KEY_BASE=your_generated_secret_here
+ENCRYPTION_SECRET=your_generated_secret_here
+S3_ATTACHMENTS_BUCKET=your-bucket-name
+AWS_ACCESS_KEY_ID=your_aws_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret
+REDIS_URL=redis://localhost:6379/0
+```
+
+**Note:** Never commit your `.env.development` or `.env` files! They contain secrets and are already in `.gitignore`.
+
+---
+
 ## ✅ Server Status
 
 The Rails server should be running on **http://localhost:3000**

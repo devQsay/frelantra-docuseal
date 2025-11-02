@@ -29,7 +29,11 @@
 yarn-debug.log*
 .yarn-integrity
 
-.env
+# Environment files (keep example templates)
+.env*
+!.env.example
+!.env.development.example
+
 .DS_Store
 
 /coverage
