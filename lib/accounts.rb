@@ -92,8 +92,10 @@ module Accounts
         return Docuseal.default_pkcs if Docuseal::CERTS.present?
 
         EncryptedConfig.find_by(account:, key: EncryptedConfig::ESIGN_CERTS_KEY)&.value ||
-          EncryptedConfig.find_by(key: EncryptedConfig::ESIGN_CERTS_KEY).value
+          EncryptedConfig.find_by(key: EncryptedConfig::ESIGN_CERTS_KEY)&.value
       end
+
+    return Docuseal.default_pkcs if cert_data.blank?
 
     if (default_cert = cert_data['custom']&.find { |e| e['status'] == 'default' })
       if default_cert['name'] == Docuseal::AATL_CERT_NAME
