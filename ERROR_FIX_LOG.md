@@ -92,10 +92,36 @@ config.active_record.encryption = {
 
 ---
 
+## Error #8: Production Esign Settings Page Returns 500 Error
+**Error**: `ActiveRecord::Encryption::Errors::Decryption` when accessing `/settings/esign` in production
+**Location**: `app/controllers/esign_settings_controller.rb:21`
+**Root Cause**: Old EncryptedConfig record with key='esign_certs' was encrypted with previous (missing/incorrect) encryption keys
+- Even though Error #7 fixed the secret references in task definition revision 24, old encrypted_configs remained in database
+- When controller tried to access `@encrypted_config.value`, Rails couldn't decrypt it
+
+**Stack Trace**:
+- `app/controllers/esign_settings_controller.rb:21` in `EsignSettingsController#show`
+- `app/models/encrypted_config.rb:34` - `encrypts :value` requires valid encryption keys
+- Error: `ActiveRecord::Encryption::Errors::Decryption`
+
+**Fix**: Deleted old esign_certs EncryptedConfig records from database
+```sql
+DELETE FROM encrypted_configs WHERE key = 'esign_certs';
+```
+- Deleted 1 record
+- Verified 0 records remain
+- New EncryptedConfig will auto-generate with correct encryption keys when users visit the page
+
+**Status**: ✅ FIXED & VERIFIED
+**Verified**: Production `/settings/esign` page no longer returns 500 errors
+
+---
+
 ## Summary
 Server should now:
 - ✅ Upload files to S3
 - ✅ Download files without errors
 - ✅ Generate PDFs with certificates
 - ✅ Access API settings page without 500 errors
+- ✅ Access Esign settings page without 500 errors
 - ✅ Load encryption keys from correct AWS Secrets Manager secret
