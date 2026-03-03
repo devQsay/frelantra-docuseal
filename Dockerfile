@@ -65,7 +65,7 @@ RUN echo '@edge https://dl-cdn.alpinelinux.org/alpine/edge/community' >> /etc/ap
     vips-heif@edge \
     gcompat \
     ttf-freefont && \
-    mkdir /fonts && \
+    mkdir -p /fonts && \
     rm /usr/share/fonts/freefont/FreeSans.otf
 
 RUN echo $'.include = /etc/ssl/openssl.cnf\n\
