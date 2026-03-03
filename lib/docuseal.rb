@@ -39,6 +39,7 @@ module Docuseal
   CERTS = JSON.parse(ENV.fetch('CERTS', '{}'))
   TIMESERVER_URL = ENV.fetch('TIMESERVER_URL', nil)
   VERSION_FILE_PATH = Rails.root.join('.version')
+  VERSION_FILE2_PATH = Rails.public_path.join('version')
 
   DEFAULT_URL_OPTIONS = {
     host: HOST,
@@ -48,7 +49,12 @@ module Docuseal
   module_function
 
   def version
-    @version ||= VERSION_FILE_PATH.read.strip if VERSION_FILE_PATH.exist?
+    @version ||=
+      if VERSION_FILE_PATH.exist?
+        VERSION_FILE_PATH.read.strip
+      elsif VERSION_FILE2_PATH.exist?
+        VERSION_FILE2_PATH.each_line.first.to_s.strip
+      end
   end
 
   def multitenant?
@@ -74,16 +80,23 @@ module Docuseal
     @default_pkcs ||= GenerateCertificate.load_pkcs(Docuseal::CERTS)
   end
 
-  def fulltext_search?(_user)
-    return false unless SearchEntry.table_exists?
-    return true if Docuseal.multitenant?
-    return true if Rails.env.local?
+  def fulltext_search?
+    return @fulltext_search unless @fulltext_search.nil?
 
-    false
+    @fulltext_search =
+      if SearchEntry.table_exists?
+        Docuseal.multitenant? || AccountConfig.exists?(key: :fulltext_search, value: true)
+      else
+        false
+      end
   end
 
   def enable_pwa?
     true
+  end
+
+  def pdf_format
+    @pdf_format ||= ENV['PDF_FORMAT'].to_s.downcase
   end
 
   def trusted_certs

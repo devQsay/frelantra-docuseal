@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module Accounts
+  LINK_EXPIRES_AT = 40.minutes
+
   module_function
 
   def create_duplicate(account)
@@ -53,14 +55,33 @@ module Accounts
     ApplicationRecord.transaction do
       account.testing_accounts << testing_account
 
+      original_email = account.users.order(:id).first.email
+      test_email = generate_unique_test_email(original_email)
+
       testing_account.users.create!(
-        email: account.users.order(:id).first.email.sub('@', '+test@'),
+        email: test_email,
         first_name: 'Testing',
         last_name: 'Environment',
         password: SecureRandom.hex,
         role: :admin
       )
     end
+  end
+
+  def generate_unique_test_email(original_email)
+    base_email = original_email.sub('@', '+test@')
+
+    return base_email unless User.exists?(email: base_email)
+
+    (1..3).each do |i|
+      test_email = original_email.sub('@', "+test#{i}@")
+
+      return test_email unless User.exists?(email: test_email)
+    end
+
+    timestamp = Time.current.to_i
+
+    original_email.sub('@', "+test#{timestamp}@")
   end
 
   def create_default_template(account)
@@ -78,6 +99,10 @@ module Accounts
     Templates::CloneAttachments.call(template: new_template, original_template: template)
 
     new_template
+  end
+
+  def load_recipient_form_fields(_account)
+    []
   end
 
   def load_signing_pkcs(account)
@@ -167,5 +192,12 @@ module Accounts
     ::ActiveSupport::TimeZone.all.find { |e| e.tzinfo == tzinfo }&.name || timezone
   rescue TZInfo::InvalidTimezoneIdentifier
     'UTC'
+  end
+
+  def link_expires_at(account)
+    return if AccountConfig.find_or_initialize_by(account: account,
+                                                  key: AccountConfig::DOWNLOAD_LINKS_EXPIRE_KEY).value == false
+
+    LINK_EXPIRES_AT.from_now
   end
 end
