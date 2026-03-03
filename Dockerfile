@@ -66,7 +66,7 @@ RUN echo '@edge https://dl-cdn.alpinelinux.org/alpine/edge/community' >> /etc/ap
     gcompat \
     ttf-freefont && \
     mkdir -p /fonts && \
-    rm /usr/share/fonts/freefont/FreeSans.otf
+    rm -f /usr/share/fonts/freefont/FreeSans.otf
 
 RUN echo $'.include = /etc/ssl/openssl.cnf\n\
     \n\
@@ -101,7 +101,7 @@ COPY --from=download /pdfium-linux/lib/libpdfium.so /usr/lib/libpdfium.so
 COPY --from=download /pdfium-linux/licenses/pdfium.txt /usr/lib/libpdfium-LICENSE.txt
 COPY --from=webpack /app/public/packs ./public/packs
 
-RUN ln -s /fonts /app/public/fonts
+RUN ln -sf /fonts /app/public/fonts
 RUN bundle exec bootsnap precompile --gemfile app/ lib/
 
 WORKDIR /data/docuseal
