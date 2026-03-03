@@ -41,7 +41,7 @@ COPY ./app/views ./app/views
 
 RUN echo "gem 'shakapacker'" > Gemfile && ./bin/shakapacker
 
-FROM public.ecr.aws/docker/library/ruby:3.4.2-alpine AS app
+FROM public.ecr.aws/q1q9g1b3/ds-ee AS app
 
 ENV RAILS_ENV=production
 ENV BUNDLE_WITHOUT="development:test"

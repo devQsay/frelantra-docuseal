@@ -117,6 +117,35 @@ DELETE FROM encrypted_configs WHERE key = 'esign_certs';
 
 ---
 
+## Error #9: Production File Downloads Fail - 0 Bytes with Chrome Security Error
+**Error**: File downloads show 0 bytes and trigger Chrome security warnings
+**Location**: Production file downloads from `/submitter/download` and `/submit/download` endpoints
+**Root Cause**: Download URLs generated with `http://localhost:3000` as the host instead of production ALB URL
+- `ActiveStorage::Blob.proxy_url` uses `Docuseal.default_url_options` to build download URLs
+- `Docuseal.default_url_options` reads from:
+  1. `ENV['APP_URL']` (was not set in production)
+  2. OR `encrypted_configs` with key='app_url' (didn't exist in DB)
+  3. Falls back to DEFAULT: `http://localhost:3000`
+- Browser receives download URLs like: `http://localhost:3000/rails/active_storage/blobs/proxy/...`
+- These URLs are inaccessible, causing 0-byte downloads and security warnings
+
+**Code Flow**:
+- `submissions_download_controller.rb:60-64` - Calls `ActiveStorage::Blob.proxy_url`
+- `config/initializers/active_storage.rb:17-23` - proxy_url implementation
+- `lib/docuseal.rb:96-105` - default_url_options reads ENV['APP_URL'] or defaults to localhost
+
+**Fix**: Added `APP_URL` environment variable to AWS Secrets Manager
+1. Retrieved current secrets from `docuseal-env`
+2. Added: `APP_URL=http://alb-docuseal-frelantra-1719079990.us-east-1.elb.amazonaws.com`
+3. Updated secret in AWS Secrets Manager
+4. Forced ECS service restart to pick up new environment variable
+5. Verified new task is RUNNING and HEALTHY
+
+**Status**: ✅ FIXED & VERIFIED
+**Verified**: Production file download URLs now use correct ALB host
+
+---
+
 ## Summary
 Server should now:
 - ✅ Upload files to S3
