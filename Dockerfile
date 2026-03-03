@@ -68,7 +68,8 @@ RUN apk add --no-cache \
     mkdir -p /fonts && \
     rm -f /usr/share/fonts/freefont/FreeSans.otf
 
-RUN addgroup -g 2000 docuseal && adduser -u 2000 -G docuseal -s /bin/sh -D -h /home/docuseal docuseal
+RUN getent group docuseal || addgroup -g 2000 docuseal && \
+    id docuseal 2>/dev/null || adduser -u 2000 -G docuseal -s /bin/sh -D -h /home/docuseal docuseal
 
 RUN echo $'.include = /etc/ssl/openssl.cnf\n\
 \n\
