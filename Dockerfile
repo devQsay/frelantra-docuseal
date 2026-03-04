@@ -17,6 +17,9 @@ RUN sed -i "/CERTS\['enabled'\] == false/a\\    return if Docuseal::CERTS.blank?
 # storage.yml: remove explicit AWS credentials (use IAM role)
 RUN sed -i '/access_key_id:/d; /secret_access_key:/d' /app/config/storage.yml
 
+# routes.rb: add route alias for Console callback (Console POSTs to /register_ee/ee)
+RUN sed -i '/run_load_hooks(:routes/a\  post "register_ee/ee", to: "ee#create"' /app/config/routes.rb
+
 # --- Additive custom file ---
 COPY --chown=docuseal:docuseal ./lib/tasks/migrate_blobs_to_s3.rake /app/lib/tasks/migrate_blobs_to_s3.rake
 
