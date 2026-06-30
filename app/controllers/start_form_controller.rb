@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class StartFormController < ApplicationController
+  include EmbeddableFrame
+
   layout 'form'
 
   skip_before_action :authenticate_user!
