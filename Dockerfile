@@ -16,6 +16,7 @@ RUN set -e && \
 
 # --- Additive custom files ---
 COPY --chown=docuseal:docuseal ./config/initializers/custom_routes.rb /app/config/initializers/custom_routes.rb
+COPY --chown=docuseal:docuseal ./config/initializers/embed_frame_headers.rb /app/config/initializers/embed_frame_headers.rb
 COPY --chown=docuseal:docuseal ./lib/tasks/migrate_blobs_to_s3.rake /app/lib/tasks/migrate_blobs_to_s3.rake
 
 WORKDIR /data/docuseal
